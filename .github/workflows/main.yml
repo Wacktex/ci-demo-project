@@ -1,20 +1,43 @@
-name: CI Pipeline
+name: CI-CD Pipeline
 
-on: [push]
+on:
+  push:
+    branches: [ "main" ]
 
 jobs:
-  build:
+  build-test-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Environment
-        run: echo "Setting up environment"
+    
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-      - name: Run Build Step
-        run: echo "Build successful"
+      - name: Run Python Program
+        run: python test.py
 
-      - name: Run Tests
-        run: echo "Tests passed"
+     
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: project-files
+          path: |
+            test.py
+            index.html
+
+     
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2
